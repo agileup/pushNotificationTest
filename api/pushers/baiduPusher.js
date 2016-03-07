@@ -8,16 +8,13 @@ var baidu = require(path.resolve('libs/baidu/client'));
  * @param {string} channel_id
  * @param {object} payload
  */
-var pushSingle = function(channel_id, payload) {
+var pushSingle = function(channel_id, payload, callback) {
     var options = {
         msg_type: 1,
         msg_expires: 18000
     };
 
-    baiduSender().pushMsgToSingleDevice(channel_id, payload, options, function(err, data) {
-        console.log("error>", err);
-        console.log("data>", data);
-    });
+    baiduSender().pushMsgToSingleDevice(channel_id, payload, options, callback);
 };
 
 var baiduSender = _.once(function() {

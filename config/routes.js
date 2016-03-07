@@ -34,7 +34,7 @@ module.exports.routes = {
 
   '/': {
     view: 'index'
-  }
+  },
 
   /***************************************************************************
   *                                                                          *
@@ -45,5 +45,8 @@ module.exports.routes = {
   * for configuration options and examples.                                  *
   *                                                                          *
   ***************************************************************************/
-
+  'post /test/connect': 'TestController.connect',
+  'post /test/start': 'TestController.start',
+  'get /test/push': 'TestController.push',
+  'get /test/ok': 'TestController.receive'
 };
