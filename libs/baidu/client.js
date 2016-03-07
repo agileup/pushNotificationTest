@@ -38,7 +38,7 @@ var BaiduPushClient = function(options) {
         maxSockets: options.maxSockets || 20
     };
 
-    if (!_.contains(validHosts, this.host)) {
+    if (!_.includes(validHosts, this.host)) {
         throw new Error('host should in: ' + validHosts);
     }
 

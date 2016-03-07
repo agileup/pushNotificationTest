@@ -19,7 +19,6 @@ var signKey = function(url, param, secretKey) {
     });
 
     var basekey = 'POST' + url + paramStr + secretKey;
-    console.log("basekey: ", basekey);
 
     var md5 = crypto.createHash('md5');
     basekey = fullEncodeURIComponent(basekey);
