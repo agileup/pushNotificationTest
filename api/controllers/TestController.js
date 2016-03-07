@@ -6,7 +6,6 @@ var gcmPusher = require(path.resolve('api/pushers/gcmPusher'));
 var baiduPusher = require(path.resolve('api/pushers/baiduPusher'));
 
 var _sleep = function(idx, cb) {
-    sails.log("sleep", idx);
     setTimeout(function() {
         cb();
     }, 10000);
@@ -74,7 +73,7 @@ var _builder = function(device, idx, count, callback) {
     async.auto({
         pusher: function(cb) {
             var start = _.now();
-            sails.sockets.broadcast(device.id, { log: 'test#' + idx + ' set' });
+            sails.sockets.broadcast(device.id, { log: 'test#' + idx + ' in progress' });
             var arr = _.range(count);
             async.eachSeries(arr, function(i, cb2) {
                 _pusher(device, idx, i, cb2);
@@ -86,6 +85,7 @@ var _builder = function(device, idx, count, callback) {
         },
         sleep: ['pusher', _.partial(_sleep, idx)]
     }, function(err) {
+        sails.log.info("test.start> test#" + idx + " done");
         callback(err);
     });
 };
@@ -99,9 +99,9 @@ module.exports = {
 
         var socketId = sails.sockets.getId(req);
         sails.sockets.join(req, req.body.id, function(err) {
+            sails.log.info("test.connect> " + socketId + ' connected on device#' + req.body.id);
             res.json({
-                error: err,
-                message: socketId + ' connected on ' + req.body.id
+                error: err
             });
         });
     },
@@ -113,6 +113,7 @@ module.exports = {
         var countSet = [1, 10, 100, 100];
         var idx = 0;
         sails.sockets.broadcast(req.body.id, { log: '>>> start(' + _.now() + ')'});
+        sails.log.info("test.start> device#" + req.body.id + " start");
         async.eachSeries(countSet, function(count, cb) {
             idx++;
             request({
@@ -139,7 +140,7 @@ module.exports = {
             }
 
             sails.sockets.broadcast(req.body.id, { log: '>>> complete(' + _.now() + ')'});
-            sails.log.info("test completed!");
+            sails.log.info("test.start> device#" + req.body.id + " complete");
 
             res.json({
                 id: req.body.id
@@ -163,7 +164,7 @@ module.exports = {
         });
     },
     receive: function(req, res) {
-        sails.log(req.query);
+        sails.log.info("test.ok>", req.query);
         res.json({});
     }
 };
