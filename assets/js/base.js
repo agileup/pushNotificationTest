@@ -2,10 +2,14 @@ angular.module('JPN', []);
 angular.module('JPN').controller('BaseCtrl', ['$scope', '$http', function($scope, $http) {
     $scope.messages = [];
     $scope.device = {
-        id: 1,
-        gcm: 'g1',
-        baidu: '4362608915109776776'
+        gcm: '',
+        baidu: ''
     };
+
+    io.socket.get('/device', function(data) {
+        $scope.device = data;
+        $scope.$apply();
+    });
 
     io.socket.on('device', function(event) {
         switch(event.verb) {
