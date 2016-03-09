@@ -8,35 +8,32 @@ var baiduPusher = require(path.resolve('api/pushers/baiduPusher'));
 var _sleep = function(idx, cb) {
     setTimeout(function() {
         cb();
-    }, 10000);
+    }, 15000);
 };
 
 var _pusher = function(device, idx, num, callback) {
     num++;
     async.auto({
         sendGCM: function(cb) {
-            if (idx === 3) {
-                return cb();
-            }
+            var message = {
+                collapseKey: 'demo',
+                // priority: 'high',
+                // contentAvailable: true,
+                delayWhileIdle: true,
+                timeToLive: 3,
+                // restrictedPackageName: "somePackageName",
+                // dryRun: true,
+                data: {
+                    title: idx,
+                    message: num
+                }
+            };
 
-            // var message = new gcm.Message({
-            //     collapseKey: 'demo',
-            //     priority: 'high',
-            //     contentAvailable: true,
-            //     delayWhileIdle: true,
-            //     timeToLive: 3,
-            //     restrictedPackageName: "somePackageName",
-            //     dryRun: true,
-            //     data: {
-            //         key1: 'message1',
-            //         key2: 'message2'
-            //     },
-            //     notification: {
-            //         title: "Hello, World",
-            //         icon: "ic_launcher",
-            //         body: "This is a notification that will be displayed ASAP."
-            //     }
-            // });
+            var payload = gcmPusher.buildPayload(message);
+            var registration_ids = [];
+            registration_ids.push(device.baidu);
+
+            gcmPusher.push(registration_ids, payload);
             cb();
         },
         sendBaidu: function(cb) {
