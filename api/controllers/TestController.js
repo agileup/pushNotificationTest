@@ -1,3 +1,5 @@
+'use strict';
+
 var _ = require('lodash');
 var async = require('async');
 var path = require('path');
@@ -5,10 +7,12 @@ var request = require('request');
 var gcmPusher = require(path.resolve('api/pushers/gcmPusher'));
 var baiduPusher = require(path.resolve('api/pushers/baiduPusher'));
 
+var SLEEP_TIME = 15000;
 var _sleep = function(idx, cb) {
+    sails.log.info("test.start> sleep#" + idx + " " + SLEEP_TIME/1000 + "s");
     setTimeout(function() {
         cb();
-    }, 15000);
+    }, SLEEP_TIME);
 };
 
 var _pusher = function(device, idx, num, callback) {
@@ -17,51 +21,32 @@ var _pusher = function(device, idx, num, callback) {
         sendGCM: function(cb) {
             var message = {
                 collapseKey: 'demo',
-                // priority: 'high',
-                // contentAvailable: true,
                 delayWhileIdle: true,
                 timeToLive: 3,
-                // restrictedPackageName: "somePackageName",
-                // dryRun: true,
                 data: {
                     title: idx,
-                    message: num
+                    message: num,
+                    custom_content: {}
                 }
             };
 
             var payload = gcmPusher.buildPayload(message);
-            var registration_ids = [];
-            registration_ids.push(device.baidu);
+            var registrationTokens = {
+                registrationTokens: [device.gcm]
+            };
 
-            gcmPusher.push(registration_ids, payload);
+            gcmPusher.push(registrationTokens, payload);
             cb();
         },
         sendBaidu: function(cb) {
-            if (idx === 3) {
-                return cb();
-            }
-
             var msg = {
                 title: idx,
-                description: num, //必选
+                description: num,
                 custom_content: {}
             };
 
             baiduPusher.push(device.baidu, msg, function() {});
             cb();
-        },
-        sendBaidu2: function(cb) {
-            if (idx != 3) {
-                return cb();
-            }
-
-            var msg = {
-                title: idx,
-                description: num, //必选
-                custom_content: {}
-            };
-
-            baiduPusher.push(device.baidu, msg, cb);
         }
     }, callback);
 };
@@ -70,6 +55,7 @@ var _builder = function(device, idx, count, callback) {
     async.auto({
         pusher: function(cb) {
             var start = _.now();
+            sails.log.info("test.start> test#" + idx + " start");
             sails.sockets.broadcast(device.id, { log: 'test#' + idx + ' in progress' });
             var arr = _.range(count);
             async.eachSeries(arr, function(i, cb2) {
@@ -77,12 +63,12 @@ var _builder = function(device, idx, count, callback) {
             }, function(err) {
                 var cost = _.now() - start;
                 sails.sockets.broadcast(device.id, { log: 'test#' + idx + ' finished in ' + cost + 'ms'});
+                sails.log.info("test.start> test#" + idx + " done");
                 cb(err);
             });
         },
         sleep: ['pusher', _.partial(_sleep, idx)]
     }, function(err) {
-        sails.log.info("test.start> test#" + idx + " done");
         callback(err);
     });
 };
@@ -107,7 +93,7 @@ module.exports = {
             return res.badRequest();
         }
 
-        var countSet = [1, 10, 100, 100];
+        var countSet = [1, 10, 50, 100];
         var idx = 0;
         sails.sockets.broadcast(req.body.id, { log: '>>> start(' + _.now() + ')'});
         sails.log.info("test.start> device#" + req.body.id + " start");
@@ -133,15 +119,14 @@ module.exports = {
         }, function(err) {
             if (err) {
                 sails.log.error("/start", err);
-                return res.serverError();
             }
 
             sails.sockets.broadcast(req.body.id, { log: '>>> complete(' + _.now() + ')'});
             sails.log.info("test.start> device#" + req.body.id + " complete");
+        });
 
-            res.json({
-                id: req.body.id
-            });
+        res.json({
+            id: req.body.id
         });
     },
     push: function(req, res) {
