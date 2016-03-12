@@ -8,15 +8,20 @@ var gcmPusher = require(path.resolve('api/pushers/gcmPusher'));
 var baiduPusher = require(path.resolve('api/pushers/baiduPusher'));
 
 var SLEEP_TIME = 15000;
-var _sleep = function(idx, cb) {
-    sails.log.info("test.start> sleep#" + idx + " " + SLEEP_TIME/1000 + "s");
+
+var _sleep = function(duration, cb) {
+    // sails.log.info("test.start> sleep for " + duration/1000 + "s");
     setTimeout(function() {
         cb();
-    }, SLEEP_TIME);
+    }, duration);
 };
 
 var _pusher = function(device, idx, num, callback) {
     num++;
+
+    var interval = (idx == 5) ? 10 : 500;
+    sails.log.info("test.push> { id: '" + device.id + "', title: '" + idx + "', body: '" + num + "' }");
+
     async.auto({
         sendGCM: function(cb) {
             var message = {
@@ -47,7 +52,8 @@ var _pusher = function(device, idx, num, callback) {
 
             baiduPusher.push(device.baidu, msg, function() {});
             cb();
-        }
+        },
+        sleep: ['sendGCM', 'sendBaidu', _.partial(_sleep, interval)]
     }, callback);
 };
 
@@ -67,7 +73,7 @@ var _builder = function(device, idx, count, callback) {
                 cb(err);
             });
         },
-        sleep: ['pusher', _.partial(_sleep, idx)]
+        sleep: ['pusher', _.partial(_sleep, SLEEP_TIME)]
     }, function(err) {
         callback(err);
     });
@@ -93,7 +99,7 @@ module.exports = {
             return res.badRequest();
         }
 
-        var countSet = [1, 10, 50, 100];
+        var countSet = [1, 10, 50, 100, 100];
         var idx = 0;
         sails.sockets.broadcast(req.body.id, { log: '>>> start(' + _.now() + ')'});
         sails.log.info("test.start> device#" + req.body.id + " start");

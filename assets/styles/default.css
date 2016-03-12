@@ -10,8 +10,7 @@ h1,h2,h3,h4,h5,h6{font-weight:normal}
 div.clear{clear:both}
 .clearfix:after{clear:both;content:".";display:block;font-size:0;height:0;line-height:0;visibility:hidden}
 body{font-family:"Open Sans",Arial,sans-serif;font-weight:300;}
-.container{width: 100%; max-width: 1200px; margin: auto;}
-div.main.container{padding: 0;}
+div.main.container{padding: 0; margin: auto;}
 h1 {color: #118798; font-weight: 300;}
 code {font-size: inherit; font-family: 'Consolas', 'Monaco', monospace; padding:4px 5px 1px; background-color: #f3f5f7}
 a{color: #118798; font-weight: 300; text-decoration: underline;}

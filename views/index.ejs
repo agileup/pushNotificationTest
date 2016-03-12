@@ -6,19 +6,17 @@
           <div class="sprite one"></div>
           <h3>Get tokens from your app</h3>
           <p>
-            Download android test app <a href="#">here</a> and install the application.
+            Download android test app <a href="https://files.jandi.com/files-public/e2170fc003d9015267b87bf023b9ddee/0d24782ad610f5c44b1feb776ffee270.apk/download/" target="_blank">here</a> and install the application.
           </p>
         </div>
       </li>
       <li class="clearfix">
         <div class="step">
           <div class="sprite two"></div>
-          <h3>
-            Start push notification test
-          </h3>
-          <p>
-            Press "Bind" button in test application, then ID and each token values will be completed automatically.
-          </p>
+          <h3>Start push notification test</h3>
+          <p>Run the application. You can check each tokens for GCM and Baidu, a few seconds later.</p>
+          <p>Press "Bind" button in test application, then ID and tokens values(on web page) will be completed automatically.</p>
+          <p>Then, click "Test Start" button below.</p>
           <form name="form" ng-submit="startTest()">
             <div>
               <label>ID: {{device.id}}</label>
@@ -31,9 +29,7 @@
             </div>
             <button class="btn btn-primary" ng-disabled="device.id == undefined" type="submit">Test Start</button>
           </form>
-          <p>
-            Results:
-          </p>
+          <p>Results:</p>
           <div class="result">
             <p ng-repeat="msg in messages">{{msg}}</p>
           </div>
@@ -42,9 +38,7 @@
       <li class="clearfix">
         <div class="step">
           <div class="sprite three"></div>
-          <h3>
-            Report
-          </h3>
+          <h3>Report</h3>
           <p>Send email to <a href="mailto:mk@tosslab.com">mk@tosslab.com</a> with above results</p>
         </div>
       </li>
