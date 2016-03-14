@@ -7,7 +7,7 @@ var request = require('request');
 var gcmPusher = require(path.resolve('api/pushers/gcmPusher'));
 var baiduPusher = require(path.resolve('api/pushers/baiduPusher'));
 
-var SLEEP_TIME = 15000;
+var SLEEP_TIME = 30000;
 
 var _sleep = function(duration, cb) {
     // sails.log.info("test.start> sleep for " + duration/1000 + "s");
@@ -19,7 +19,7 @@ var _sleep = function(duration, cb) {
 var _pusher = function(device, idx, num, callback) {
     num++;
 
-    var interval = (idx == 5) ? 10 : 500;
+    var interval = (idx == 6) ? 100 : 1000;
     sails.log.info("test.push> { id: '" + device.id + "', title: '" + idx + "', body: '" + num + "' }");
 
     async.auto({
@@ -99,7 +99,7 @@ module.exports = {
             return res.badRequest();
         }
 
-        var countSet = [1, 10, 50, 100, 100];
+        var countSet = [1, 10, 10, 10, 10, 50];
         var idx = 0;
         sails.sockets.broadcast(req.body.id, { log: '>>> start(' + _.now() + ')'});
         sails.log.info("test.start> device#" + req.body.id + " start");
