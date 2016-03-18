@@ -8,8 +8,7 @@
 module.exports = {
     attributes: {
         gcm: {
-            type: 'string',
-            required: true
+            type: 'string'
         },
         baidu: {
             type: 'string',

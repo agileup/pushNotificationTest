@@ -26,7 +26,7 @@ angular.module('JPN').controller('BaseCtrl', ['$scope', '$http', function($scope
     });
 
     $scope.startTest = function() {
-        if (!$scope.device.gcm || !$scope.device.baidu) {
+        if (!$scope.device.id || !$scope.device.baidu) {
             return;
         }
 

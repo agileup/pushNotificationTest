@@ -19,11 +19,15 @@ var _sleep = function(duration, cb) {
 var _pusher = function(device, idx, num, callback) {
     num++;
 
-    var interval = (idx == 6) ? 100 : 1000;
+    var interval = (idx == 6) ? 10 : 500;
     sails.log.info("test.push> { id: '" + device.id + "', title: '" + idx + "', body: '" + num + "' }");
 
     async.auto({
         sendGCM: function(cb) {
+            if (!device.gcm) {
+                return cb();
+            }
+
             var message = {
                 collapseKey: 'demo',
                 delayWhileIdle: true,
@@ -95,7 +99,7 @@ module.exports = {
         });
     },
     start: function(req, res) {
-        if (!req.body.gcm || !req.body.baidu) {
+        if (!req.body.id || !req.body.baidu) {
             return res.badRequest();
         }
 
@@ -110,7 +114,7 @@ module.exports = {
                 method: 'GET',
                 qs: {
                     id: req.body.id,
-                    gcm: req.body.gcm,
+                    gcm: req.body.gcm || null,
                     baidu: req.body.baidu,
                     idx: idx,
                     count: count
