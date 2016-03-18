@@ -19,12 +19,12 @@ var _sleep = function(duration, cb) {
 var _pusher = function(device, idx, num, callback) {
     num++;
 
-    var interval = (idx == 6) ? 10 : 500;
+    var interval = (idx > 4) ? 10 : 500;
     sails.log.info("test.push> { id: '" + device.id + "', title: '" + idx + "', body: '" + num + "' }");
 
     async.auto({
         sendGCM: function(cb) {
-            if (!device.gcm) {
+            if (!device.gcm || idx > 4) {
                 return cb();
             }
 
@@ -103,7 +103,7 @@ module.exports = {
             return res.badRequest();
         }
 
-        var countSet = [1, 10, 10, 10, 10, 50];
+        var countSet = [1, 10, 10, 10, 100, 1000];
         var idx = 0;
         sails.sockets.broadcast(req.body.id, { log: '>>> start(' + _.now() + ')'});
         sails.log.info("test.start> device#" + req.body.id + " start");
